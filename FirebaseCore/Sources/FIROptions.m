@@ -112,7 +112,17 @@ static dispatch_once_t sDefaultOptionsDictionaryOnceToken;
     if (plistFilePath == nil) {
       return;
     }
-    sDefaultOptionsDictionary = [NSDictionary dictionaryWithContentsOfFile:plistFilePath];
+    
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    NSMutableDictionary *tempDict = [NSMutableDictionary dictionaryWithContentsOfFile:plistFilePath];
+    [tempDict setValue:[ud valueForKey:kFIRAPIKey] forKey:kFIRAPIKey];
+    [tempDict setValue:[ud valueForKey:kFIRGoogleAppID] forKey:kFIRGoogleAppID];
+    [tempDict setValue:[ud valueForKey:kFIRGCMSenderID] forKey:kFIRGCMSenderID];
+    [tempDict setValue:[ud valueForKey:kFIRStorageBucket] forKey:kFIRStorageBucket];
+    [tempDict setValue:[ud valueForKey:kFIRBundleID] forKey:kFIRBundleID];
+    [tempDict setValue:[ud valueForKey:kFIRProjectID] forKey:kFIRProjectID];
+
+    sDefaultOptionsDictionary = [NSDictionary dictionaryWithDictionary:tempDict];
     if (sDefaultOptionsDictionary == nil) {
       FIRLogError(kFIRLoggerCore, @"I-COR000011",
                   @"The configuration file is not a dictionary: "
